@@ -108,7 +108,7 @@ Design identique au prototype HTML `BioPaternal-App.html`. Application web uniqu
 
 | Fichier | Description |
 |---|---|
-| `app/page.tsx` | Landing : nav avec sélecteur langue FR/EN, badges flottants (apparaissent +400ms), hero, stats, FAQ, footer. `'use client'` pour le dropdown et l'animation des badges. |
+| `app/page.tsx` | Landing : nav avec sélecteur langue FR/EN, badges flottants ABO/Rhésus/Kell (apparaissent +400ms, masqués mobile), eyebrow pill "Test d'exclusion de paternité", H1 "Lever le Doute / Génétique en 3 clics", stats, FAQ, footer. `'use client'` pour le dropdown et l'animation des badges. |
 | `app/login/page.tsx` | Wrapper `<AuthCard defaultTab="login" />` |
 | `app/signup/page.tsx` | Wrapper `<AuthCard defaultTab="register" />` |
 | `components/auth-card.tsx` | Two-panel auth (gauche sombre brand, droite form). Tabs login/register, Google OAuth, hint de test sous le bouton connexion. |
@@ -137,6 +137,37 @@ Design identique au prototype HTML `BioPaternal-App.html`. Application web uniqu
 
 ---
 
+### ✅ Sprint 7 — Responsive mobile + retouches landing (2026-06-12)
+
+| Action | Fichier | Détail |
+|---|---|---|
+| Responsive mobile global | `app/globals.css` | Media query `@media (max-width: 640px)` — 14 règles couvrant : formulaire test (grille 1 col, section Kell, bouton submit full-width), page résultat (padding, titre clamp, grille systèmes 1 col), panel auth (colonne gauche masquée, padding réduit), landing (stats colonne, nav/footer compacts) |
+| Badges flottants masqués mobile | `app/globals.css` | `.landing-badge-float { display: none !important; }` — ABO, Rhésus, Kell invisibles sur ≤ 640px |
+| Eyebrow pill — texte | `app/page.tsx` | "La science, en clair" → **"Test d'exclusion de paternité"** |
+| H1 hero — capitalisation | `app/page.tsx` | "doute" → **"Doute"**, "génétique" → **"Génétique"** |
+
+**Classes responsive ajoutées dans `globals.css` :**
+
+| Classe | Comportement mobile |
+|---|---|
+| `.test-page` | `padding: 16px 16px 32px` |
+| `.person-cards-grid` | `grid-template-columns: 1fr` |
+| `.kell-section` | `flex-direction: column`, `align-items: flex-start`, `gap: 12px` |
+| `.submit-row` | `flex-direction: column`, `align-items: stretch`, `gap: 12px` |
+| `.submit-row .btn-cta` | `width: 100%`, `justify-content: center` |
+| `.result-header` | `padding: 24px 20px` |
+| `.result-header h2` | `font-size: clamp(20px, 7vw, 32px)` |
+| `.result-body` | `padding: 20px 16px`, `max-width: 100%` |
+| `.systems-grid` | `grid-template-columns: 1fr` |
+| `.auth-left-panel` | `display: none` (colonne brand masquée) |
+| `.auth-form-panel` | `padding: 32px 24px` |
+| `.landing-stats` | `flex-direction: column`, `gap: 20px`, `align-items: flex-start` |
+| `.landing-nav` | `padding: 14px 20px` |
+| `.landing-footer` | `padding: 16px 20px` |
+| `.landing-badge-float` | `display: none` (badges ABO/Rh/Kell masqués) |
+
+---
+
 ### ✅ Sprint 6 — Git, CI/CD, corrections build (2026-06-12)
 
 | Action | Détail |
@@ -161,7 +192,7 @@ Design identique au prototype HTML `BioPaternal-App.html`. Application web uniqu
 | Paiements CinetPay | `CINETPAY_API_KEY` et `CINETPAY_SITE_ID` vides (valeur `placeholder` sur Vercel) | Activer compte CinetPay + mettre les vraies clés |
 | Admin ban/reset | `app/admin/page.tsx` appelle `/api/admin/users/:id/ban` et `/api/admin/users/:id/reset-password` — routes inexistantes | Créer ces deux endpoints API |
 | Admin design | `app/admin/page.tsx` utilise l'ancien design sombre — non mis à jour en Sprint 5 | Refonte visuelle admin |
-| Pages responsive | CSS responsive retiré (décision produit) — les pages ne s'adaptent pas mobile | Sprint dédié si besoin |
+| Pages responsive | ✅ Couvert en Sprint 7 — toutes les pages principales s'adaptent à ≤ 640px | — |
 | Tests E2E paiement | Non testable sans credentials passerelle | Débloquer avec les vrais credentials |
 
 ---
