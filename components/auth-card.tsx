@@ -64,7 +64,7 @@ export function AuthCard({ defaultTab = 'login' }: Props) {
     const res = await fetch('/api/auth/signup', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ name: regName, email: regEmail, password: regPass }),
+      body: JSON.stringify({ name: regName, email: regEmail, password: regPass, cguAccepted: true, privacyAccepted: true }),
     })
     const data = await res.json()
     if (!res.ok) { setError(data.error || 'Une erreur est survenue.'); setLoading(false); return }
