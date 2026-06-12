@@ -169,14 +169,14 @@ export default function LandingPage() {
             marginBottom: 22,
             fontFamily: 'var(--font-body)',
           }}>
-            Lever le doute<br />
+            Lever le Doute<br />
             <span style={{
               background: 'linear-gradient(120deg, #FF4A1C 0%, #F59E0B 55%, #FF4A1C 100%)',
               WebkitBackgroundClip: 'text',
               backgroundClip: 'text',
               color: 'transparent',
             }}>
-              génétique en 3 clics
+              Génétique en 3 clics
             </span>
           </h1>
 
