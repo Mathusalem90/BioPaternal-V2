@@ -8,12 +8,6 @@ import { prisma } from './prisma'
 
 // Fail fast at startup if a required env var is missing, rather than passing
 // an empty string to the OAuth provider and getting an opaque runtime error.
-function requireEnv(key: string): string {
-  const val = process.env[key]
-  if (!val) throw new Error(`Missing required environment variable: ${key}`)
-  return val
-}
-
 export const authOptions: NextAuthOptions = {
   adapter: PrismaAdapter(prisma as PrismaClient),
   secret: process.env.NEXTAUTH_SECRET,
@@ -42,10 +36,12 @@ export const authOptions: NextAuthOptions = {
         return { id: user.id, email: user.email, role: user.role }
       },
     }),
-    GoogleProvider({
-      clientId: requireEnv('GOOGLE_CLIENT_ID'),
-      clientSecret: requireEnv('GOOGLE_CLIENT_SECRET'),
-    }),
+    ...(process.env.GOOGLE_CLIENT_ID && process.env.GOOGLE_CLIENT_SECRET
+      ? [GoogleProvider({
+          clientId: process.env.GOOGLE_CLIENT_ID,
+          clientSecret: process.env.GOOGLE_CLIENT_SECRET,
+        })]
+      : []),
   ],
   callbacks: {
     // RGPD — CGU gate for Google OAuth users.
