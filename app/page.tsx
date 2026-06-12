@@ -243,7 +243,10 @@ export default function LandingPage() {
       </section>
 
       {/* ── FAQ ─────────────────────────────────────── */}
-      <section style={{ maxWidth: 600, margin: '0 auto', padding: '0 24px 64px' }}>
+      <section style={{ position: 'relative' }}>
+        <div className="stage-bg" />
+        <div className="grain" />
+        <div style={{ position: 'relative', zIndex: 5, maxWidth: 600, margin: '0 auto', padding: '0 24px 64px' }}>
         <div style={{
           fontFamily: 'var(--font-mono)', fontSize: 10, letterSpacing: '.2em',
           textTransform: 'uppercase', color: 'rgba(16,8,6,.35)', marginBottom: 18, textAlign: 'center',
@@ -268,6 +271,7 @@ export default function LandingPage() {
               </p>
             </details>
           ))}
+        </div>
         </div>
       </section>
 
