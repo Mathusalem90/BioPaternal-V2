@@ -157,7 +157,7 @@ export default function LandingPage() {
           {/* Eyebrow */}
           <div className="eyebrow" style={{ marginBottom: 16 }}>
             <span style={{ width: 6, height: 6, borderRadius: 999, background: '#FF4A1C', boxShadow: '0 0 0 3px rgba(255,74,28,.18)', flexShrink: 0 }} />
-            La science, en clair
+            Test d&apos;exclusion de paternité
           </div>
 
           {/* H1 */}
