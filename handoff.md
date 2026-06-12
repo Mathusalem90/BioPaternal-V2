@@ -137,6 +137,21 @@ Design identique au prototype HTML `BioPaternal-App.html`. Application web uniqu
 
 ---
 
+### ✅ Sprint 8 — Authentification Google OAuth + conformité RGPD (2026-06-12)
+
+| Action | Fichier | Détail |
+|---|---|---|
+| Guard env vars | `lib/auth.ts` | `requireEnv()` remplace `?? ''` sur `GOOGLE_CLIENT_ID` et `GOOGLE_CLIENT_SECRET` — lance une exception explicite au démarrage si une variable est absente, au lieu de passer une chaîne vide et d'obtenir une erreur opaque Google `invalid_client` |
+| CGU gate Google OAuth | `lib/auth.ts` | Nouveau callback `signIn` : pour tout login `provider === 'google'`, vérifie la table `Consent` en base. Si aucun enregistrement → redirige vers `/signup?consent=required&uid=…`. Les utilisateurs Google bypassaient auparavant la checkbox CGU du formulaire d'inscription. |
+| Credentials Vercel | — | `GOOGLE_CLIENT_ID`, `GOOGLE_CLIENT_SECRET`, `NEXTAUTH_URL`, `NEXTAUTH_SECRET` ajoutés dans Vercel → Settings → Environment Variables |
+| URIs Google Cloud Console | — | Origines JS autorisées : `http://localhost:3001`. URI de redirection : `http://localhost:3001/api/auth/callback/google` |
+
+**Invariant RGPD confirmé :** les callbacks `jwt` et `session` n'exposent que `id` et `role`. Aucune donnée biologique ne transite par les cookies de session.
+
+> **Route manquante :** le callback `signIn` redirige les nouveaux utilisateurs Google vers `/signup?consent=required`. La route `POST /api/auth/consent` (qui crée le `Consent` en base et redirige vers `/app/test`) n'existe pas encore — à créer en priorité pour débloquer le flux Google complet.
+
+---
+
 ### ✅ Sprint 7 — Responsive mobile + retouches landing (2026-06-12)
 
 | Action | Fichier | Détail |
@@ -186,7 +201,7 @@ Design identique au prototype HTML `BioPaternal-App.html`. Application web uniqu
 | Problème | Cause | Action requise |
 |---|---|---|
 | `NEXTAUTH_URL` en prod | Actuellement `https://bio-paternal-v2.vercel.app` — à vérifier/corriger après déploiement | Dashboard Vercel → Variables environnementales → mettre l'URL finale |
-| Google OAuth | `GOOGLE_CLIENT_ID` et `GOOGLE_CLIENT_SECRET` vides | Créer credentials Google Cloud Console |
+| Google OAuth — consent | Callback `signIn` redirige les nouveaux users Google vers `/signup?consent=required` mais `POST /api/auth/consent` n'existe pas encore | Créer la route + page consent pour les nouveaux utilisateurs Google |
 | Paiements Stripe | `STRIPE_SECRET_KEY` et `STRIPE_WEBHOOK_SECRET` vides | Activer compte Stripe + enregistrer webhook |
 | Paiements FedaPay | `FEDAPAY_SECRET_KEY` et `FEDAPAY_WEBHOOK_SECRET` vides | Activer compte FedaPay |
 | Paiements CinetPay | `CINETPAY_API_KEY` et `CINETPAY_SITE_ID` vides (valeur `placeholder` sur Vercel) | Activer compte CinetPay + mettre les vraies clés |
