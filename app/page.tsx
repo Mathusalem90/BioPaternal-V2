@@ -17,33 +17,6 @@ function LogoDNA({ size = 32 }: { size?: number }) {
   )
 }
 
-/* ── Badge icons ── */
-function AboIcon() {
-  return (
-    <svg width="14" height="15" viewBox="0 0 24 26" fill="none" aria-hidden>
-      <path d="M12 2C12 2 5 11 5 16a7 7 0 0 0 14 0C19 11 12 2 12 2z" fill="#B3261E"/>
-    </svg>
-  )
-}
-function RhesusIcon() {
-  return (
-    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" aria-hidden>
-      <path d="M9 3C13 7 13 11 9 15C5 19 5 21 9 21M15 3C11 7 11 11 15 15C19 19 19 21 15 21" stroke="#FF4A1C" strokeWidth="2.2" strokeLinecap="round"/>
-      <line x1="7" y1="9" x2="17" y2="9" stroke="#FF4A1C" strokeWidth="1.6" strokeLinecap="round" opacity="0.65"/>
-      <line x1="7" y1="15" x2="17" y2="15" stroke="#FF4A1C" strokeWidth="1.6" strokeLinecap="round" opacity="0.65"/>
-    </svg>
-  )
-}
-function KellIcon() {
-  return (
-    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" aria-hidden>
-      <path d="M9 3v8L4.5 18.5A1 1 0 0 0 5.5 21h13a1 1 0 0 0 .87-1.5L15 11V3M9 3h6" stroke="#D97706" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
-      <circle cx="10.5" cy="17" r="1.3" fill="#D97706"/>
-      <circle cx="14" cy="14.5" r="1" fill="#D97706" opacity="0.65"/>
-    </svg>
-  )
-}
-
 /* ── Language selector dropdown ── */
 function LangSelector() {
   const [open, setOpen] = useState(false)
@@ -152,25 +125,25 @@ export default function LandingPage() {
         <div className="stage-bg" />
         <div className="grain" />
 
-        {/* Floating badges — desktop only, apparaissent après 400ms */}
+        {/* Floating badges — apparaissent après 400ms comme dans le prototype */}
         {badgesVisible && (
           <>
-            <div className="animate-float-a landing-badge-float" style={{ position: 'absolute', top: '8%', left: '6%' }}>
+            <div className="animate-float-a" style={{ position: 'absolute', top: '8%', left: '6%' }}>
               <div className="badge-pill">
-                <AboIcon />
-                Système ABO
+                <span style={{ width: 8, height: 8, borderRadius: 999, background: '#B3261E', flexShrink: 0 }} />
+                Système ABO 🩸
               </div>
             </div>
-            <div className="animate-float-b landing-badge-float" style={{ position: 'absolute', top: '12%', right: '5%' }}>
+            <div className="animate-float-b" style={{ position: 'absolute', top: '12%', right: '5%' }}>
               <div className="badge-pill">
-                <RhesusIcon />
-                Facteur Rhésus
+                <span style={{ width: 8, height: 8, borderRadius: 999, background: '#FF4A1C', flexShrink: 0 }} />
+                Facteur Rhésus 🧬
               </div>
             </div>
-            <div className="animate-float-c landing-badge-float" style={{ position: 'absolute', bottom: '28%', right: '7%' }}>
+            <div className="animate-float-c" style={{ position: 'absolute', bottom: '28%', right: '7%' }}>
               <div className="badge-pill">
-                <KellIcon />
-                Système Kell
+                <span style={{ width: 8, height: 8, borderRadius: 999, background: '#F59E0B', flexShrink: 0 }} />
+                Système Kell ⚗️
               </div>
             </div>
           </>
@@ -185,13 +158,6 @@ export default function LandingPage() {
           <div className="eyebrow" style={{ marginBottom: 16 }}>
             <span style={{ width: 6, height: 6, borderRadius: 999, background: '#FF4A1C', boxShadow: '0 0 0 3px rgba(255,74,28,.18)', flexShrink: 0 }} />
             La science, en clair
-          </div>
-
-          {/* Badges row — mobile uniquement (≤640px) */}
-          <div className="landing-badges-mobile" style={{ display: 'none', justifyContent: 'center', gap: 8, flexWrap: 'wrap', marginBottom: 20 }}>
-            <div className="badge-pill"><AboIcon />Système ABO</div>
-            <div className="badge-pill"><RhesusIcon />Facteur Rhésus</div>
-            <div className="badge-pill"><KellIcon />Système Kell</div>
           </div>
 
           {/* H1 */}
