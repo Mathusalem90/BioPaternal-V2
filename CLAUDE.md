@@ -73,6 +73,10 @@ Floating animation keyframes (`animate-float-a/b/c`) are defined in `tailwind.co
 
 Uses `pdfkit`. Must remain in `serverComponentsExternalPackages` in `next.config.mjs` — pdfkit resolves its own font files at runtime and cannot be bundled by Next.js.
 
+## Auth & variables d'environnement
+
+Le projet utilise Next.js et Auth.js (NextAuth v4) pour l'authentification Google. Les variables d'environnement sont stockées dans `.env` et ne doivent jamais être exposées — ce fichier est exclu du dépôt via `.gitignore` et ne doit jamais être commité.
+
 ## Database
 
 Supabase PostgreSQL via the connection pooler (port 6543 — port 5432 is blocked on the local network). Schema managed with Prisma 4. After any schema change: `npx prisma migrate dev` then `npx prisma generate`.
