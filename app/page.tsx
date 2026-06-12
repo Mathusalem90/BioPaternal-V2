@@ -128,19 +128,19 @@ export default function LandingPage() {
         {/* Floating badges — apparaissent après 400ms comme dans le prototype */}
         {badgesVisible && (
           <>
-            <div className="animate-float-a landing-badge-float" style={{ position: 'absolute', top: '8%', left: '6%' }}>
+            <div className="animate-float-a" style={{ position: 'absolute', top: '8%', left: '6%' }}>
               <div className="badge-pill">
                 <span style={{ width: 8, height: 8, borderRadius: 999, background: '#B3261E', flexShrink: 0 }} />
                 Système ABO 🩸
               </div>
             </div>
-            <div className="animate-float-b landing-badge-float" style={{ position: 'absolute', top: '12%', right: '5%' }}>
+            <div className="animate-float-b" style={{ position: 'absolute', top: '12%', right: '5%' }}>
               <div className="badge-pill">
                 <span style={{ width: 8, height: 8, borderRadius: 999, background: '#FF4A1C', flexShrink: 0 }} />
                 Facteur Rhésus 🧬
               </div>
             </div>
-            <div className="animate-float-c landing-badge-float" style={{ position: 'absolute', bottom: '28%', right: '7%' }}>
+            <div className="animate-float-c" style={{ position: 'absolute', bottom: '28%', right: '7%' }}>
               <div className="badge-pill">
                 <span style={{ width: 8, height: 8, borderRadius: 999, background: '#F59E0B', flexShrink: 0 }} />
                 Système Kell ⚗️
