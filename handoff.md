@@ -13,9 +13,13 @@ Construire une application web Next.js permettant à un utilisateur de soumettre
 | Hébergeur | **Vercel** (Next.js natif, serverless Node.js) |
 | Base de données | **Supabase** — pooler EU West (port direct 5432 bloqué réseau local) |
 | Dev local | `http://localhost:3001` (port 3000 occupé sur la machine) |
-| Variables d'env | Définies dans `.env` en local, à dupliquer dans le **dashboard Vercel** pour la production |
+| Dépôt Git | **GitHub public** — `https://github.com/Mathusalem90/BioPaternal-V2` (branche `main`) |
+| CI/CD | Vercel connecté à GitHub — chaque `git push main` déclenche un redéploiement automatique |
+| Variables d'env | Définies dans `.env` en local, dupliquées dans le **dashboard Vercel → Variables environnementales** |
 
 > **Point critique Vercel :** `serverComponentsExternalPackages: ['pdfkit']` dans `next.config.mjs` est obligatoire. Sans cette ligne, Vercel inline pdfkit dans le bundle Lambda et ses fichiers de polices AFM deviennent inaccessibles au runtime → crash de la génération PDF en production.
+
+> **Point critique build :** le script `build` dans `package.json` doit être `"prisma generate && next build"`. Un simple `"tsc"` ne génère pas le dossier `.next` et cause un `DEPLOYMENT_NOT_FOUND` sur Vercel.
 
 ---
 
@@ -133,14 +137,28 @@ Design identique au prototype HTML `BioPaternal-App.html`. Application web uniqu
 
 ---
 
+### ✅ Sprint 6 — Git, CI/CD, corrections build (2026-06-12)
+
+| Action | Détail |
+|---|---|
+| Dépôt Git initialisé | `git init` + `.gitignore` étendu (`.env`, `.next`, `tsconfig.tsbuildinfo`) |
+| Premier commit | 51 fichiers — code sprints 1–5 versionné (`.env` exclu) |
+| Remote GitHub | `https://github.com/Mathusalem90/BioPaternal-V2` (public, branche `main`) |
+| Vercel connecté | Projet `bio-paternal-v2` lié au dépôt — auto-deploy sur push `main` |
+| Fix build script | `package.json` : `"build"` → `"prisma generate && next build"` (était `"tsc"`) |
+| Documentation | Section 2 ABO simplifiée — génotypes et cas d'exclusion précis retirés |
+
+---
+
 ### ❌ Ce qui ne fonctionne pas / bloqué sur configuration
 
 | Problème | Cause | Action requise |
 |---|---|---|
+| `NEXTAUTH_URL` en prod | Actuellement `https://bio-paternal-v2.vercel.app` — à vérifier/corriger après déploiement | Dashboard Vercel → Variables environnementales → mettre l'URL finale |
 | Google OAuth | `GOOGLE_CLIENT_ID` et `GOOGLE_CLIENT_SECRET` vides | Créer credentials Google Cloud Console |
 | Paiements Stripe | `STRIPE_SECRET_KEY` et `STRIPE_WEBHOOK_SECRET` vides | Activer compte Stripe + enregistrer webhook |
 | Paiements FedaPay | `FEDAPAY_SECRET_KEY` et `FEDAPAY_WEBHOOK_SECRET` vides | Activer compte FedaPay |
-| Paiements CinetPay | `CINETPAY_API_KEY` et `CINETPAY_SITE_ID` vides | Activer compte CinetPay |
+| Paiements CinetPay | `CINETPAY_API_KEY` et `CINETPAY_SITE_ID` vides (valeur `placeholder` sur Vercel) | Activer compte CinetPay + mettre les vraies clés |
 | Admin ban/reset | `app/admin/page.tsx` appelle `/api/admin/users/:id/ban` et `/api/admin/users/:id/reset-password` — routes inexistantes | Créer ces deux endpoints API |
 | Admin design | `app/admin/page.tsx` utilise l'ancien design sombre — non mis à jour en Sprint 5 | Refonte visuelle admin |
 | Pages responsive | CSS responsive retiré (décision produit) — les pages ne s'adaptent pas mobile | Sprint dédié si besoin |
