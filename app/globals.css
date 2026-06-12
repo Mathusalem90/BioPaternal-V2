@@ -315,4 +315,6 @@
   .landing-stats { flex-direction: column !important; gap: 20px !important; align-items: flex-start !important; }
   .landing-nav { padding: 14px 20px !important; }
   .landing-footer { padding: 16px 20px !important; }
+  .landing-badge-float { display: none !important; }
+  .landing-badges-mobile { display: flex !important; }
 }
