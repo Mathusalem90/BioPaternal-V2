@@ -13,7 +13,9 @@ export type Kell = 'K+' | 'K-'
 export type BloodPhenotype = {
   abo: ABO
   rh: Rh
-  kell: Kell
+  // Kell est optionnel dans le formulaire — null = non fourni, le locus est
+  // alors ignoré par l'analyse (ABO + Rhésus restent obligatoires).
+  kell: Kell | null
 }
 
 export class MotherChildIncompatibilityError extends Error {
@@ -123,12 +125,15 @@ export function assessPaternity(mother: BloodPhenotype, father: BloodPhenotype, 
   const rhPossibleWithThisParents = possibleRhChildren(mother.rh, father.rh)
   const rhCompatible = rhPossibleWithThisParents.has(child.rh)
 
-  // 4) Kell rule: two K- parents cannot have K+ child
-  if (mother.kell === 'K-' && father.kell === 'K-' && child.kell === 'K+') {
+  // 4) Kell rule (only when the three phenotypes are provided):
+  //    two K- parents cannot have K+ child
+  const kellProvided = mother.kell !== null && father.kell !== null && child.kell !== null
+  if (kellProvided && mother.kell === 'K-' && father.kell === 'K-' && child.kell === 'K+') {
     return 'EXCLUSION'
   }
 
-  const kellPossible = possibleKellChildren(mother.kell, father.kell).has(child.kell)
+  const kellPossible = !kellProvided ||
+    possibleKellChildren(mother.kell as Kell, father.kell as Kell).has(child.kell as Kell)
 
   // If any of the loci are impossible with the provided father -> EXCLUSION
   if (!aboCompatible || !rhCompatible || !kellPossible) return 'EXCLUSION'

@@ -12,7 +12,8 @@ function isPhenotype(v: unknown): v is BloodPhenotype {
   return (
     ['A', 'B', 'AB', 'O'].includes(abo as string) &&
     ['+', '-'].includes(rh as string) &&
-    ['K+', 'K-'].includes(kell as string)
+    // Kell est optionnel — le formulaire envoie null quand il n'est pas fourni
+    (kell === null || ['K+', 'K-'].includes(kell as string))
   )
 }
 
@@ -42,7 +43,7 @@ export async function POST(req: Request) {
       {
         error: 'INVALID_INPUT',
         message:
-          'Each phenotype requires: abo (A|B|AB|O), rh (+|-), kell (K+|K-).',
+          'Each phenotype requires: abo (A|B|AB|O), rh (+|-). kell is optional (K+|K-|null).',
       },
       { status: 400 },
     )

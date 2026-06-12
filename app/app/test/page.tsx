@@ -23,6 +23,15 @@ const PERSONS = [
   { key: 'pere'   as const, label: 'Père présumé',  emoji: '👨', accent: 'rgba(16,8,6,.05)'   },
 ]
 
+// Codes d'erreur API → messages affichables
+const API_ERRORS: Record<string, string> = {
+  INVALID_INPUT: 'Données invalides. Vérifiez les groupes sanguins saisis.',
+  MOTHER_CHILD_INCOMPATIBLE: 'Les groupes mère/enfant sont biologiquement incompatibles.',
+  UNAUTHORIZED: 'Session expirée. Reconnectez-vous puis réessayez.',
+  INVALID_OR_EXPIRED_TOKEN: 'La session d’analyse a expiré. Relancez l’analyse.',
+  PAYMENT_UNAVAILABLE: 'Le paiement est momentanément indisponible. Réessayez plus tard.',
+}
+
 const STEPS = [
   { icon: '🩺', label: 'Validation mère / enfant' },
   { icon: '🩸', label: 'Analyse système ABO'       },
@@ -67,23 +76,42 @@ export default function TestPage() {
   }, [loading])
 
   function setABO(person: 'mere'|'enfant'|'pere', val: ABO) {
+    setError('')
     setPhenos(p => ({ ...p, [person]: { ...p[person], abo: val } }))
   }
   function setRh(person: 'mere'|'enfant'|'pere', val: Rh) {
+    setError('')
     setPhenos(p => ({ ...p, [person]: { ...p[person], rh: val } }))
   }
   function setKellVal(person: 'mere'|'enfant'|'pere', val: Kell) {
+    setError('')
     setPhenos(p => ({ ...p, [person]: { ...p[person], kell: val } }))
   }
 
   const incompatible = aboImpossible(phenos.mere.abo, phenos.enfant.abo)
 
-  const isReady = (['mere', 'enfant', 'pere'] as const).every(
-    p => phenos[p].abo && phenos[p].rh
-  ) && !incompatible
+  // Liste des champs manquants, affichée au clic plutôt que de griser le
+  // bouton sans explication.
+  function missingFields(): string[] {
+    const missing: string[] = []
+    for (const { key, label } of PERSONS) {
+      if (!phenos[key].abo) missing.push(`${label} — groupe ABO`)
+      if (!phenos[key].rh)  missing.push(`${label} — rhésus`)
+      if (kellOn && !phenos[key].kell) missing.push(`${label} — Kell`)
+    }
+    return missing
+  }
 
   async function handleSubmit() {
-    if (!isReady) return
+    const missing = missingFields()
+    if (missing.length > 0) {
+      setError(`Champs manquants : ${missing.join(' · ')}${kellOn && missing.some(m => m.includes('Kell')) ? ' (ou désactivez l’option Kell)' : ''}`)
+      return
+    }
+    if (incompatible) {
+      setError('Corrigez l’incohérence mère/enfant signalée ci-dessus avant de lancer l’analyse.')
+      return
+    }
     setError('')
     setLoading(true)
     startTimeRef.current = Date.now()
@@ -101,7 +129,7 @@ export default function TestPage() {
       const analyzeData = await analyzeRes.json()
       if (!analyzeRes.ok) {
         stepTimersRef.current.forEach(clearTimeout)
-        setError(analyzeData.error || "Erreur lors de l'analyse.")
+        setError(API_ERRORS[analyzeData.error] ?? "Erreur lors de l'analyse.")
         setLoading(false)
         return
       }
@@ -114,7 +142,7 @@ export default function TestPage() {
       const payData = await payRes.json()
       if (!payRes.ok) {
         stepTimersRef.current.forEach(clearTimeout)
-        setError(payData.error || 'Erreur lors du paiement.')
+        setError(API_ERRORS[payData.error] ?? 'Erreur lors du paiement.')
         setLoading(false)
         return
       }
@@ -358,12 +386,9 @@ export default function TestPage() {
         <button
           className="btn-cta"
           onClick={handleSubmit}
-          disabled={!isReady}
           style={{
             padding: '14px 28px', borderRadius: 12, fontSize: 15, fontWeight: 700,
             display: 'inline-flex', alignItems: 'center', gap: 9,
-            opacity: !isReady ? 0.45 : 1,
-            cursor: !isReady ? 'not-allowed' : 'pointer',
           }}
         >
           🔬 Lancer l&apos;analyse

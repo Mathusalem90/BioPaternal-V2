@@ -33,8 +33,17 @@ export function detectGateway(headers: Headers): GatewayInfo {
   return { gateway: 'STRIPE', currency: 'EUR', country }
 }
 
+// Tolère les valeurs entourées de guillemets ou suivies d'un commentaire
+// (le chargeur .env de Next.js les laisse dans la valeur) et retombe sur le
+// tarif par défaut plutôt que de produire NaN.
+function parsePrice(raw: string | undefined, fallback: number): number {
+  const match = (raw ?? '').match(/\d+/)
+  const n = match ? parseInt(match[0], 10) : NaN
+  return Number.isFinite(n) && n > 0 ? n : fallback
+}
+
 export function priceForCurrency(currency: string): number {
-  if (currency === 'XOF') return parseInt(process.env.TEST_PRICE_XOF ?? '15000')
-  if (currency === 'USD') return parseInt(process.env.TEST_PRICE_USD_CENTS ?? '2500')
-  return parseInt(process.env.TEST_PRICE_EUR_CENTS ?? '2500') // EUR default
+  if (currency === 'XOF') return parsePrice(process.env.TEST_PRICE_XOF, 15000)
+  if (currency === 'USD') return parsePrice(process.env.TEST_PRICE_USD_CENTS, 2500)
+  return parsePrice(process.env.TEST_PRICE_EUR_CENTS, 2500) // EUR default
 }

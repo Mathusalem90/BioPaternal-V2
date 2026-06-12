@@ -1,9 +1,24 @@
 'use client'
 
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import { signIn } from 'next-auth/react'
 import { useRouter } from 'next/navigation'
 import Link from 'next/link'
+
+// Codes d'erreur API → messages affichables
+const API_ERRORS: Record<string, string> = {
+  EMAIL_ALREADY_EXISTS: 'Un compte existe déjà avec cette adresse e-mail. Utilisez l’onglet « Se connecter ».',
+  INVALID_REQUEST: 'Vérifiez les champs du formulaire (mot de passe : 8 caractères minimum).',
+}
+
+// Erreurs NextAuth passées en query string (?error=...) après un échec OAuth
+const NEXTAUTH_ERRORS: Record<string, string> = {
+  OAuthAccountNotLinked: 'Cette adresse e-mail est déjà associée à un compte. Connectez-vous avec votre e-mail et votre mot de passe.',
+  OAuthCallback: 'La connexion Google a échoué. Réessayez.',
+  OAuthSignin: 'Impossible de démarrer la connexion Google. Réessayez.',
+  AccessDenied: 'Accès refusé par Google.',
+  Default: 'Une erreur est survenue pendant la connexion. Réessayez.',
+}
 
 type Tab = 'login' | 'register'
 
@@ -45,6 +60,13 @@ export function AuthCard({ defaultTab = 'login' }: Props) {
   const [loading, setLoading]       = useState(false)
   const router = useRouter()
 
+  // NextAuth redirige vers /login?error=XXX après un échec OAuth — sans ça,
+  // un échec Google (ex. OAuthAccountNotLinked) était totalement silencieux.
+  useEffect(() => {
+    const code = new URLSearchParams(window.location.search).get('error')
+    if (code) setError(NEXTAUTH_ERRORS[code] ?? NEXTAUTH_ERRORS.Default)
+  }, [])
+
   async function handleLogin(e: React.FormEvent) {
     e.preventDefault()
     setError('')
@@ -67,8 +89,20 @@ export function AuthCard({ defaultTab = 'login' }: Props) {
       body: JSON.stringify({ name: regName, email: regEmail, password: regPass, cguAccepted: true, privacyAccepted: true }),
     })
     const data = await res.json()
-    if (!res.ok) { setError(data.error || 'Une erreur est survenue.'); setLoading(false); return }
-    await signIn('credentials', { redirect: false, email: regEmail, password: regPass })
+    if (!res.ok) {
+      setError(API_ERRORS[data.error] ?? data.message ?? 'Une erreur est survenue.')
+      setLoading(false)
+      return
+    }
+    const login = await signIn('credentials', { redirect: false, email: regEmail, password: regPass })
+    if (login?.error) {
+      // Compte créé mais connexion automatique impossible — basculer sur
+      // l'onglet connexion plutôt que de laisser croire que rien n'a marché.
+      setLoading(false)
+      setTab('login')
+      setError('Votre compte a été créé. Connectez-vous avec votre e-mail et votre mot de passe.')
+      return
+    }
     router.push('/app/test')
   }
 
@@ -188,9 +222,9 @@ export function AuthCard({ defaultTab = 'login' }: Props) {
                   <input className="inp" type="password" placeholder="••••••••"
                     value={loginPass} onChange={e => setLoginPass(e.target.value)} required />
                   <div style={{ textAlign: 'right', marginTop: 5 }}>
-                    <span style={{ fontSize: 11.5, color: '#FF4A1C', cursor: 'pointer' }}>
+                    <Link href="/forgot-password" style={{ fontSize: 11.5, color: '#FF4A1C', textDecoration: 'none' }}>
                       Mot de passe oublié ?
-                    </span>
+                    </Link>
                   </div>
                 </Field>
               </div>
@@ -202,9 +236,6 @@ export function AuthCard({ defaultTab = 'login' }: Props) {
                 {loading ? 'Connexion…' : 'Se connecter'}
                 {!loading && <ArrowIcon />}
               </button>
-              <div style={{ fontSize: 11.5, color: 'rgba(16,8,6,.4)', textAlign: 'center', marginTop: 8 }}>
-                💡 Pour tester : entrez n&apos;importe quel email + mot de passe
-              </div>
             </form>
           )}
 

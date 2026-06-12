@@ -33,37 +33,30 @@ export const authOptions: NextAuthOptions = {
         const isValid = await verifyPassword(user.password, credentials.password)
         if (!isValid) return null
 
-        return { id: user.id, email: user.email, role: user.role }
+        // name alimente token.name → affiché dans la barre de navigation.
+        return { id: user.id, email: user.email, name: user.name, role: user.role }
       },
     }),
     ...(process.env.GOOGLE_CLIENT_ID && process.env.GOOGLE_CLIENT_SECRET
       ? [GoogleProvider({
           clientId: process.env.GOOGLE_CLIENT_ID,
           clientSecret: process.env.GOOGLE_CLIENT_SECRET,
+          // Google verifies email ownership, so linking a Google login to an
+          // existing credentials account with the same email is safe here.
+          // Without this, a credentials user clicking "Continuer avec Google"
+          // gets a silent OAuthAccountNotLinked failure.
+          allowDangerousEmailAccountLinking: true,
         })]
       : []),
   ],
   callbacks: {
-    // RGPD — CGU gate for Google OAuth users.
+    // RGPD — the CGU gate for Google users does NOT live here.
+    // On a first Google sign-in this callback runs BEFORE the adapter
+    // creates the User row (user.id is the Google `sub`), so blocking or
+    // redirecting here makes consent impossible to record. Instead, the
+    // sign-in always completes and /app/layout.tsx redirects users without
+    // a Consent row to /signup/consent (checked via GET /api/auth/consent).
     // Credentials users accept CGU via the signup form (/api/auth/signup).
-    // Google users skip that form, so we check the Consent table here.
-    // A user without a Consent record is redirected to accept CGU before
-    // accessing the app. This fires on every sign-in but the DB hit is
-    // negligible compared to the OAuth round-trip.
-    async signIn({ user, account }) {
-      if (account?.provider === 'google' && user.id) {
-        const consent = await prisma.consent.findFirst({
-          where: { userId: user.id },
-        })
-        if (!consent) {
-          // New Google user — redirect to the consent acceptance page.
-          // The page must POST to /api/auth/consent to create the record,
-          // then redirect to /app/test.
-          return `/signup?consent=required&uid=${user.id}`
-        }
-      }
-      return true
-    },
 
     // JWT — only identity fields. Never put biological data here.
     async jwt({ token, user }) {

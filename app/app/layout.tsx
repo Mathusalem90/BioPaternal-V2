@@ -2,7 +2,7 @@
 
 import { useSession, signOut } from 'next-auth/react'
 import { useRouter } from 'next/navigation'
-import { useEffect } from 'react'
+import { useEffect, useState } from 'react'
 import Link from 'next/link'
 
 function LogoDNA() {
@@ -21,12 +21,31 @@ function LogoDNA() {
 export default function AppLayout({ children }: { children: React.ReactNode }) {
   const { data: session, status } = useSession()
   const router = useRouter()
+  // null = vérification en cours, true/false = statut connu
+  const [consentAccepted, setConsentAccepted] = useState<boolean | null>(null)
 
   useEffect(() => {
     if (status === 'unauthenticated') router.push('/login')
   }, [status, router])
 
-  if (status === 'loading') {
+  // RGPD — les utilisateurs Google n'ont pas de consentement à l'inscription
+  // (contrairement au formulaire e-mail). Tant que la table Consent n'a pas
+  // de ligne pour eux, ils sont redirigés vers /signup/consent.
+  useEffect(() => {
+    if (status !== 'authenticated') return
+    let cancelled = false
+    fetch('/api/auth/consent')
+      .then((r) => (r.ok ? r.json() : { accepted: true }))
+      .then((d) => {
+        if (cancelled) return
+        if (d.accepted === false) router.replace('/signup/consent')
+        else setConsentAccepted(true)
+      })
+      .catch(() => { if (!cancelled) setConsentAccepted(true) })
+    return () => { cancelled = true }
+  }, [status, router])
+
+  if (status === 'loading' || (status === 'authenticated' && consentAccepted === null)) {
     return (
       <div style={{ minHeight: '100vh', background: '#FFFBF7', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
         <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 12 }}>
@@ -62,7 +81,7 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
         <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
           <div style={{ width: 7, height: 7, borderRadius: 999, background: '#22c55e' }} />
           <span style={{ fontSize: 12.5, color: 'rgba(16,8,6,.5)' }}>
-            {session.user?.email}
+            {session.user?.name || session.user?.email}
           </span>
           <button
             onClick={() => signOut({ callbackUrl: '/' })}

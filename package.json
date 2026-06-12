@@ -5,7 +5,7 @@
   "type": "module",
   "scripts": {
     "build": "prisma generate && next build",
-    "dev": "next dev",
+    "dev": "next dev -p 3001",
     "test": "vitest run",
     "seed": "tsx prisma/seed.ts"
   },

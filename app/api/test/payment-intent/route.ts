@@ -15,6 +15,12 @@ function getStripe() {
 
 const BASE_URL = process.env.NEXTAUTH_URL!
 
+function gatewayConfigured(gateway: string): boolean {
+  if (gateway === 'STRIPE') return !!process.env.STRIPE_SECRET_KEY
+  if (gateway === 'FEDAPAY') return !!process.env.FEDAPAY_SECRET_KEY
+  return !!(process.env.CINETPAY_API_KEY && process.env.CINETPAY_SITE_ID)
+}
+
 /**
  * POST /api/test/payment-intent
  * Auth: required (NextAuth JWT session).
@@ -72,6 +78,26 @@ export async function POST(req: NextRequest) {
     },
   })
 
+  // 5bis. Gateway credentials not configured:
+  //  - in dev, simulate a successful payment so the flow can be tested
+  //    end-to-end without real keys (no webhook → GlobalStat not incremented)
+  //  - in production, fail cleanly with 503 instead of an opaque crash
+  if (!gatewayConfigured(gateway)) {
+    if (process.env.NODE_ENV !== 'production') {
+      console.warn(`[payment-intent] ${gateway} non configuré — paiement SIMULÉ (dev) pour la transaction ${transaction.id}`)
+      await prisma.transaction.update({
+        where: { id: transaction.id },
+        data: { status: 'SUCCESSFUL', providerRef: 'DEV_SIMULATED' },
+      })
+      return NextResponse.json({ paymentUrl: `${BASE_URL}/app/result?transactionId=${transaction.id}` })
+    }
+    await prisma.transaction.update({
+      where: { id: transaction.id },
+      data: { status: 'FAILED' },
+    })
+    return NextResponse.json({ error: 'PAYMENT_UNAVAILABLE' }, { status: 503 })
+  }
+
   // 6. Initiate payment with the selected gateway
   let paymentUrl: string
 
@@ -118,7 +144,8 @@ async function createStripeSession(
       },
     ],
     mode: 'payment',
-    success_url: `${BASE_URL}/app/result?session_id={CHECKOUT_SESSION_ID}`,
+    // La page /app/result identifie la transaction par transactionId
+    success_url: `${BASE_URL}/app/result?transactionId=${transactionId}&session_id={CHECKOUT_SESSION_ID}`,
     cancel_url: `${BASE_URL}/app/test`,
     metadata: { transactionId },
   })
@@ -194,7 +221,7 @@ async function createCinetpaySession(
       currency: 'XOF',
       description: 'BioPaternal — Rapport complet',
       notify_url: `${BASE_URL}/api/webhooks/cinetpay`,
-      return_url: `${BASE_URL}/app/result`,
+      return_url: `${BASE_URL}/app/result?transactionId=${transactionId}`,
       lang: 'fr',
       channels: 'ALL',
       customer_email: email,
