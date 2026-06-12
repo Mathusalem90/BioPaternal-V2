@@ -192,7 +192,7 @@ export default function TestPage() {
   }
 
   return (
-    <div style={{ background: '#F8F9FA', minHeight: 'calc(100vh - 53px)', padding: '20px 28px 40px' }}>
+    <div className="test-page" style={{ background: '#F8F9FA', minHeight: 'calc(100vh - 53px)', padding: '20px 28px 40px' }}>
 
       {/* Progress */}
       <div style={{ marginBottom: 20 }}>
@@ -222,7 +222,7 @@ export default function TestPage() {
       )}
 
       {/* Person cards grid */}
-      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 16, marginBottom: 16 }}>
+      <div className="person-cards-grid" style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 16, marginBottom: 16 }}>
         {PERSONS.map(({ key, label, emoji, accent }, idx) => (
           <div
             key={key}
@@ -302,7 +302,7 @@ export default function TestPage() {
       </div>
 
       {/* Kell toggle section */}
-      <div style={{
+      <div className="kell-section" style={{
         background: 'rgba(245,158,11,.06)', border: '1.5px solid rgba(245,158,11,.18)',
         borderRadius: 14, padding: '16px 18px', marginBottom: 16,
         display: 'flex', alignItems: 'center', justifyContent: 'space-between',
@@ -351,7 +351,7 @@ export default function TestPage() {
       )}
 
       {/* Submit row */}
-      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '4px 0' }}>
+      <div className="submit-row" style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '4px 0' }}>
         <div style={{ fontSize: 12, color: 'rgba(16,8,6,.4)' }}>
           🔒 Données traitées dans votre navigateur uniquement
         </div>

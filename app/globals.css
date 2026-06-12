@@ -291,3 +291,28 @@
     color: #C42A07;
   }
 }
+
+/* ── Responsive (≤ 640px) ──────────────────────────────── */
+@media (max-width: 640px) {
+  /* Test page */
+  .test-page { padding: 16px 16px 32px !important; }
+  .person-cards-grid { grid-template-columns: 1fr !important; }
+  .kell-section { flex-direction: column !important; align-items: flex-start !important; gap: 12px !important; }
+  .submit-row { flex-direction: column !important; align-items: stretch !important; gap: 12px !important; }
+  .submit-row .btn-cta { width: 100% !important; justify-content: center !important; }
+
+  /* Result page */
+  .result-header { padding: 24px 20px !important; }
+  .result-header h2 { font-size: clamp(20px, 7vw, 32px) !important; }
+  .result-body { padding: 20px 16px !important; max-width: 100% !important; }
+  .systems-grid { grid-template-columns: 1fr !important; }
+
+  /* Auth card */
+  .auth-left-panel { display: none !important; }
+  .auth-form-panel { padding: 32px 24px !important; }
+
+  /* Landing */
+  .landing-stats { flex-direction: column !important; gap: 20px !important; align-items: flex-start !important; }
+  .landing-nav { padding: 14px 20px !important; }
+  .landing-footer { padding: 16px 20px !important; }
+}

@@ -121,7 +121,7 @@ function ResultContent() {
       {/* ── Coloured header ──────────────────────── */}
       <div
         id="resultHeader"
-        className={isExclusion ? 'res-red' : 'res-gray'}
+        className={`${isExclusion ? 'res-red' : 'res-gray'} result-header`}
         style={{ padding: '36px 40px', position: 'relative', overflow: 'hidden' }}
       >
         {/* Dot grid overlay */}
@@ -184,7 +184,7 @@ function ResultContent() {
       </div>
 
       {/* ── Body ─────────────────────────────────── */}
-      <div id="resultBody" style={{ padding: '28px 40px', maxWidth: 720 }}>
+      <div id="resultBody" className="result-body" style={{ padding: '28px 40px', maxWidth: 720 }}>
 
         {/* Exclusion detail */}
         {isExclusion && (

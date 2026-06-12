@@ -94,7 +94,7 @@ export function AuthCard({ defaultTab = 'login' }: Props) {
       }}>
 
         {/* ── Left: brand panel ────────────────────── */}
-        <div style={{
+        <div className="auth-left-panel" style={{
           flex: '0 0 42%',
           background: 'linear-gradient(160deg, #100806, #1F1410)',
           color: '#FFFBF7', padding: '44px 36px',
@@ -152,7 +152,7 @@ export function AuthCard({ defaultTab = 'login' }: Props) {
         </div>
 
         {/* ── Right: form panel ────────────────────── */}
-        <div style={{
+        <div className="auth-form-panel" style={{
           flex: 1, background: '#FFFBF7', padding: '44px 36px',
           display: 'flex', flexDirection: 'column', justifyContent: 'center',
         }}>
