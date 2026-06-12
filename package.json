@@ -1,0 +1,39 @@
+{
+  "name": "biopaternal",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "build": "tsc",
+    "dev": "next dev",
+    "test": "vitest run",
+    "seed": "tsx prisma/seed.ts"
+  },
+  "dependencies": {
+    "@next-auth/prisma-adapter": "^1.0.7",
+    "@prisma/client": "^4.0.0",
+    "argon2": "^0.30.0",
+    "jose": "^6.2.3",
+    "next-auth": "^4.24.14",
+    "pdfkit": "^0.18.0",
+    "stripe": "^22.2.0"
+  },
+  "devDependencies": {
+    "@types/node": "^20.11.0",
+    "@types/pdfkit": "^0.17.6",
+    "@types/react": "19.2.16",
+    "autoprefixer": "^10.5.0",
+    "chart.js": "^4.5.1",
+    "next": "^13.0.0",
+    "postcss": "^8.5.15",
+    "prisma": "^4.0.0",
+    "react-chartjs-2": "^5.3.1",
+    "tailwindcss": "^3.4.19",
+    "tsx": "^4.19.0",
+    "typescript": "^5.0.0",
+    "vitest": "^1.5.0"
+  },
+  "prisma": {
+    "seed": "tsx prisma/seed.ts"
+  }
+}

@@ -1,0 +1,293 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  :root {
+    --ink: #100806;
+    --paper: #FFFBF7;
+    --paper-2: #FBEFE6;
+    --orange: #FF4A1C;
+    --orange-light: #FF8A3D;
+    --orange-dark: #C42A07;
+    --amber: #F59E0B;
+    --rouge: #B3261E;
+  }
+
+  *, *::before, *::after { box-sizing: border-box; }
+
+  html, body {
+    color: var(--ink);
+    background: var(--paper);
+    font-family: var(--font-body), system-ui, sans-serif;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+  }
+
+  ::selection { background: #FF4A1C; color: #FFFBF7; }
+
+  ::-webkit-scrollbar { width: 5px; }
+  ::-webkit-scrollbar-track { background: transparent; }
+  ::-webkit-scrollbar-thumb { background: rgba(16,8,6,.14); border-radius: 3px; }
+}
+
+@layer components {
+
+  /* ── Stage background (radial gradients) ─────────────── */
+  .stage-bg {
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+    background:
+      radial-gradient(60% 45% at 18% 18%, rgba(255,74,28,.12), transparent 70%),
+      radial-gradient(55% 40% at 82% 22%, rgba(245,158,11,.14), transparent 72%),
+      radial-gradient(70% 50% at 50% 92%, rgba(255,217,200,.55), transparent 65%);
+  }
+
+  /* ── Grain texture overlay ───────────────────────────── */
+  .grain {
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+    opacity: .35;
+    mix-blend-mode: multiply;
+    background-image: radial-gradient(rgba(16,8,6,.06) 1px, transparent 1px);
+    background-size: 3px 3px;
+  }
+
+  /* ── CTA Orange button ───────────────────────────────── */
+  .btn-cta {
+    position: relative;
+    isolation: isolate;
+    cursor: pointer;
+    border: none;
+    background: linear-gradient(135deg, #FF8A3D 0%, #FF4A1C 50%, #C42A07 100%);
+    color: #FFFBF7;
+    font-family: inherit;
+    box-shadow:
+      inset 0 1px 0 rgba(255,255,255,.35),
+      inset 0 -2px 0 rgba(120,30,10,.35),
+      0 10px 22px -8px rgba(196,42,7,.55),
+      0 2px 6px rgba(0,0,0,.1);
+    transition: transform .15s, box-shadow .15s;
+  }
+  .btn-cta:hover { transform: translateY(-1px); }
+  .btn-cta:active { transform: translateY(0); }
+  .btn-cta::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    border-radius: inherit;
+    padding: 1.5px;
+    background: linear-gradient(180deg, rgba(255,255,255,.5), rgba(255,255,255,0) 50%);
+    -webkit-mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0);
+    -webkit-mask-composite: xor;
+    mask-composite: exclude;
+    pointer-events: none;
+  }
+
+  /* ── Dark button ─────────────────────────────────────── */
+  .btn-dark {
+    cursor: pointer;
+    border: none;
+    background: #100806;
+    color: #FFFBF7;
+    font-family: inherit;
+    box-shadow: 0 2px 8px -4px rgba(16,8,6,.5);
+    transition: background .15s;
+  }
+  .btn-dark:hover { background: #1F1410; }
+
+  /* ── Eyebrow pill ────────────────────────────────────── */
+  .eyebrow {
+    display: inline-flex;
+    align-items: center;
+    gap: 7px;
+    background: #fff;
+    border: 1px solid rgba(16,8,6,.08);
+    border-radius: 999px;
+    padding: 4px 13px 4px 8px;
+    font-size: 11px;
+    font-weight: 600;
+    letter-spacing: .14em;
+    text-transform: uppercase;
+    color: #C42A07;
+    box-shadow: 0 1px 0 rgba(255,255,255,.8) inset, 0 4px 10px -6px rgba(16,8,6,.1);
+  }
+
+  /* ── Floating badge pill ─────────────────────────────── */
+  .badge-pill {
+    background: #fff;
+    border: 1px solid rgba(16,8,6,.06);
+    border-radius: 14px;
+    padding: 8px 14px;
+    display: inline-flex;
+    align-items: center;
+    gap: 7px;
+    box-shadow: 0 2px 8px -3px rgba(16,8,6,.14), 0 12px 28px -12px rgba(255,74,28,.22);
+    font-size: 13px;
+    font-weight: 500;
+  }
+
+  /* ── Input field ─────────────────────────────────────── */
+  .inp {
+    width: 100%;
+    padding: 11px 14px;
+    border: 1.5px solid rgba(16,8,6,.12);
+    border-radius: 10px;
+    font-size: 14px;
+    outline: none;
+    background: #fff;
+    font-family: inherit;
+    color: var(--ink);
+    transition: border-color .18s;
+  }
+  .inp:focus { border-color: #FF4A1C; }
+
+  /* ── Person card ─────────────────────────────────────── */
+  .person-card {
+    background: #fff;
+    border: 1.5px solid rgba(16,8,6,.08);
+    border-radius: 18px;
+    padding: 20px;
+    box-shadow: 0 1px 3px rgba(16,8,6,.04), 0 6px 18px -8px rgba(16,8,6,.09);
+  }
+  .person-card.active-card {
+    border-color: rgba(255,74,28,.3);
+    box-shadow: 0 0 0 3px rgba(255,74,28,.07), 0 6px 18px -8px rgba(16,8,6,.09);
+  }
+
+  /* ── ABO selector buttons ────────────────────────────── */
+  .abo-btn {
+    width: 58px;
+    height: 58px;
+    border-radius: 13px;
+    border: 2px solid rgba(16,8,6,.1);
+    background: #fff;
+    font-size: 17px;
+    font-weight: 700;
+    cursor: pointer;
+    transition: all .16s;
+    display: grid;
+    place-items: center;
+    color: var(--ink);
+    font-family: inherit;
+  }
+  .abo-btn:hover:not(.sel) { border-color: rgba(16,8,6,.3); }
+  .abo-btn.sel {
+    border-color: #FF4A1C;
+    background: rgba(255,74,28,.09);
+    color: #C42A07;
+    box-shadow: 0 0 0 3px rgba(255,74,28,.14);
+  }
+
+  /* ── Toggle group (Rh / Kell) ────────────────────────── */
+  .toggle-wrap {
+    display: flex;
+    border-radius: 10px;
+    overflow: hidden;
+    border: 2px solid rgba(16,8,6,.1);
+  }
+  .toggle-btn {
+    flex: 1;
+    padding: 10px 0;
+    font-size: 14px;
+    font-weight: 700;
+    border: none;
+    background: #fff;
+    cursor: pointer;
+    transition: background .15s, color .15s;
+    color: var(--ink);
+    font-family: inherit;
+  }
+  .toggle-btn.sel { background: #100806; color: #FFFBF7; }
+
+  /* ── Progress bar ────────────────────────────────────── */
+  .progress-bar {
+    height: 3px;
+    background: rgba(16,8,6,.07);
+    border-radius: 999px;
+    overflow: hidden;
+  }
+  .progress-fill {
+    height: 100%;
+    background: linear-gradient(to right, #FF4A1C, #F59E0B);
+    border-radius: 999px;
+    transition: width .6s ease;
+  }
+
+  /* ── Result header gradients ─────────────────────────── */
+  .res-red { background: linear-gradient(160deg, #7A1810 0%, #B3261E 50%, #8B1A12 100%); }
+  .res-gray { background: linear-gradient(160deg, #1f2937 0%, #374151 50%, #1f2937 100%); }
+
+  /* ── DNA affiliate box ───────────────────────────────── */
+  .dna-box {
+    background: linear-gradient(135deg, rgba(255,74,28,.06), rgba(245,158,11,.07));
+    border: 1.5px solid rgba(255,74,28,.2);
+    border-radius: 16px;
+  }
+
+  /* ── FAQ accordion ───────────────────────────────────── */
+  .faq-item {
+    border-radius: 10px;
+    border: 1px solid rgba(16,8,6,.07);
+    background: #fff;
+    overflow: hidden;
+    transition: border-color .2s;
+  }
+  .faq-item:hover { border-color: rgba(16,8,6,.13); }
+  details.faq-item[open] { border-color: rgba(255,74,28,.25); }
+  .faq-summary {
+    padding: 13px 16px;
+    font-size: 13.5px;
+    font-weight: 600;
+    cursor: pointer;
+    list-style: none;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    color: var(--ink);
+    user-select: none;
+  }
+  .faq-summary::-webkit-details-marker { display: none; }
+
+  /* ── Analyzing step items ────────────────────────────── */
+  .step-item {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 12px 16px;
+    border-radius: 12px;
+    background: rgba(255,255,255,.06);
+    font-size: 14px;
+    color: rgba(255,255,255,.5);
+    transition: all .3s;
+  }
+  .step-item.done { color: #FFFBF7; background: rgba(255,255,255,.1); }
+  .step-icon {
+    width: 26px;
+    height: 26px;
+    border-radius: 999px;
+    flex-shrink: 0;
+    background: rgba(255,255,255,.1);
+    display: grid;
+    place-items: center;
+    font-size: 13px;
+  }
+  .step-item.done .step-icon { background: #FF4A1C; }
+
+  /* ── Blur overlay (teaser) ───────────────────────────── */
+  .blurred-content {
+    filter: blur(8px);
+    user-select: none;
+    pointer-events: none;
+  }
+
+  /* ── Stat number (landing) ───────────────────────────── */
+  .stat-num {
+    font-family: var(--font-display);
+    font-style: italic;
+    font-size: 28px;
+    color: #C42A07;
+  }
+}
