@@ -22,7 +22,14 @@ const CINETPAY_COUNTRIES = new Set([
  * Falls back to Stripe/EUR for unknown or non-FCFA countries.
  */
 export function detectGateway(headers: Headers): GatewayInfo {
-  const country = (headers.get('x-vercel-ip-country') ?? 'XX').toUpperCase()
+  let country = (headers.get('x-vercel-ip-country') ?? 'XX').toUpperCase()
+
+  // En local, le header x-vercel-ip-country n'existe pas (posé par l'edge
+  // Vercel) : DEV_FORCE_COUNTRY permet de tester FedaPay/CinetPay depuis le
+  // navigateur (ex. CI → CinetPay, BJ → FedaPay). Ignoré en production.
+  if (process.env.NODE_ENV !== 'production' && process.env.DEV_FORCE_COUNTRY) {
+    country = process.env.DEV_FORCE_COUNTRY.toUpperCase()
+  }
 
   if (FEDAPAY_COUNTRIES.has(country)) {
     return { gateway: 'FEDAPAY', currency: 'XOF', country }

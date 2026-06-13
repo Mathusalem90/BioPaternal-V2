@@ -41,11 +41,33 @@ function ResultContent() {
     } catch { /* ignore */ }
 
     if (!transactionId) { setFetchError('Identifiant de transaction manquant.'); setLoading(false); return }
-    fetch(`/api/test/result?transactionId=${transactionId}`)
-      .then(r => r.json())
-      .then(data => { if (data.error) setFetchError(data.error); else setResult(data) })
-      .catch(() => setFetchError('Erreur lors du chargement du résultat.'))
-      .finally(() => setLoading(false))
+
+    // Après un paiement réel, la confirmation arrive par webhook avec un
+    // léger délai : sur 402 (paiement pas encore confirmé), on réessaie
+    // pendant ~30 s avant d'afficher l'erreur.
+    let cancelled = false
+    let attempts = 0
+    const MAX_ATTEMPTS = 15
+
+    async function load() {
+      try {
+        const r = await fetch(`/api/test/result?transactionId=${transactionId}`)
+        const data = await r.json()
+        if (cancelled) return
+        if (r.status === 402 && attempts < MAX_ATTEMPTS) {
+          attempts++
+          setTimeout(load, 2000)
+          return
+        }
+        if (data.error) setFetchError(data.error)
+        else setResult(data)
+      } catch {
+        if (!cancelled) setFetchError('Erreur lors du chargement du résultat.')
+      }
+      if (!cancelled) setLoading(false)
+    }
+    load()
+    return () => { cancelled = true }
   }, [transactionId])
 
   async function downloadPdf() {

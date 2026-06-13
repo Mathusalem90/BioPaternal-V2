@@ -227,14 +227,26 @@ async function createCinetpaySession(
       customer_email: email,
     }),
   })
-  if (!res.ok) throw new Error(`CinetPay initiation failed: ${res.status}`)
+  if (!res.ok) throw new Error(`CinetPay initiation failed: HTTP ${res.status}`)
 
-  const data = (await res.json()) as { data: { payment_url: string; payment_token: string } }
+  // CinetPay renvoie ses erreurs en HTTP 200 avec un code interne :
+  // seul code '201' (CREATED) accompagné d'une payment_url est un succès.
+  const data = (await res.json()) as {
+    code?: string
+    message?: string
+    description?: string
+    data?: { payment_url?: string; payment_token?: string }
+  }
+  if (data.code !== '201' || !data.data?.payment_url) {
+    throw new Error(
+      `CinetPay initiation failed: code=${data.code} ${data.message ?? ''} ${data.description ?? ''}`.trim()
+    )
+  }
 
   // Store CinetPay payment token as providerRef
   await prisma.transaction.update({
     where: { id: transactionId },
-    data: { providerRef: data.data.payment_token },
+    data: { providerRef: data.data.payment_token ?? null },
   })
 
   return data.data.payment_url
